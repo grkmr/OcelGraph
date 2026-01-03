@@ -7,7 +7,6 @@ from .inputs.ocelGraph import EventRoot, OCELGraphInput
 from .resources.ocelGraph import E2ORelation, EventNode, O2ORelation, ObjectNode, OCELGraph
 
 
-# Generic function to count neighbours (events or objects)
 def group_relation_entity(
     df: pd.DataFrame,
     entity_ids: list[str],
@@ -136,7 +135,6 @@ def mine_ocel_graph(ocel: OCEL, input: OCELGraphInput):
             row["id"] for _, row in events.iterrows() if row["count"] <= input.max_neighbours or row["id"] == root_id
         ]
 
-        # Add o2o relations to graph and queue new objects
         for _, row in (
             cast(pd.DataFrame, mirrored_o2o[mirrored_o2o["id"].isin(object_id_with_neighbours)])
             .drop_duplicates(subset=["target_id"], keep="first")
@@ -147,7 +145,6 @@ def mine_ocel_graph(ocel: OCEL, input: OCELGraphInput):
             )
             objects_to_visit.append(ObjectNode(id=str(row["target_id"]), object_type=str(row["target_type"])))
 
-        # Add e2o relations (object → event)
         for _, row in (
             cast(pd.DataFrame, relations[relations["ocel:oid"].isin(object_id_with_neighbours)])
             .drop_duplicates(subset=["ocel:eid"], keep="first")
@@ -163,7 +160,6 @@ def mine_ocel_graph(ocel: OCEL, input: OCELGraphInput):
             )
             events_to_visit.append(EventNode(id=str(row["ocel:eid"]), activity_type=str(row["ocel:activity"])))
 
-        # Add e2o relations (event → object)
         for _, row in (
             cast(
                 pd.DataFrame,

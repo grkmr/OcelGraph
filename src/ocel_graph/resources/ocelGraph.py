@@ -63,15 +63,13 @@ class OCELGraph(Resource):
             GraphEdge(
                 source=edge.event_id,
                 target=edge.object_id,
-                arrows=(None, None),
                 color=color_map[edge.object_type],
                 label=edge.qualifier,
             )
             for edge in self.e2o_relations
         ]
         o2o_edges = [
-            GraphEdge(source=edge.source, target=edge.target, arrows=(None, None), label=edge.qualifier)
-            for edge in self.o2o_relations
+            GraphEdge(source=edge.source, target=edge.target, label=edge.qualifier) for edge in self.o2o_relations
         ]
 
         return Graph(

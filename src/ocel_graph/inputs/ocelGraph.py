@@ -26,7 +26,7 @@ class EventRoot(BaseModel):
     )
 
 
-class OCELGraphInput(PluginInput, frozen=True):
+class OCELGraphInput(PluginInput):
     root: ObjectRoot | EventRoot
     depth: int = Field(
         title="OCEL Graph Depth", description="The maximum depth of the ocel graph", default=3, gt=0, le=10
