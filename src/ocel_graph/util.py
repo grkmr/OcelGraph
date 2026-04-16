@@ -37,11 +37,11 @@ def mine_ocel_graph(ocel: OCEL, input: OCELGraphInput):
 
     if isinstance(input.root, EventRoot):
         root_id = input.root.event_id
-        root = ocel.events[ocel.events[ocel.ocel.event_id_column] == input.root.event_id].iloc[0]
+        root = ocel.events.df[ocel.events.df[ocel.ocel.event_id_column] == input.root.event_id].iloc[0]
         events_to_visit.append(EventNode(id=input.root.event_id, activity_type=root[ocel.ocel.event_activity]))
     else:
         root_id = input.root.object_id
-        root = ocel.objects[ocel.objects[ocel.ocel.object_id_column] == input.root.object_id].iloc[0]
+        root = ocel.objects.df[ocel.objects.df[ocel.ocel.object_id_column] == input.root.object_id].iloc[0]
         objects_to_visit.append(ObjectNode(id=input.root.object_id, object_type=root[ocel.ocel.object_type_column]))
 
     for _ in range(input.depth):
@@ -52,13 +52,13 @@ def mine_ocel_graph(ocel: OCEL, input: OCELGraphInput):
         # Get event-object relations using XOR and not already in the graph
         relations: pd.DataFrame = cast(
             pd.DataFrame,
-            ocel.relations[
+            ocel.e2o.df[
                 (
-                    (ocel.relations[ocel.ocel.event_id_column].isin(event_ids_to_visit))
-                    ^ (ocel.relations[ocel.ocel.object_id_column].isin(object_ids_to_visit))
+                    (ocel.e2o.df[ocel.ocel.event_id_column].isin(event_ids_to_visit))
+                    ^ (ocel.e2o.df[ocel.ocel.object_id_column].isin(object_ids_to_visit))
                 )
-                & ~(ocel.relations[ocel.ocel.event_id_column].isin(graph.event_ids))
-                & ~(ocel.relations[ocel.ocel.object_id_column].isin(graph.object_ids))
+                & ~(ocel.e2o.df[ocel.ocel.event_id_column].isin(graph.event_ids))
+                & ~(ocel.e2o.df[ocel.ocel.object_id_column].isin(graph.object_ids))
             ],
         )
 
@@ -83,13 +83,13 @@ def mine_ocel_graph(ocel: OCEL, input: OCELGraphInput):
         # Get object-object (o2o) relations using XOR
         o2o = cast(
             pd.DataFrame,
-            ocel.o2o[
+            ocel.o2o.typed_df[
                 (
-                    (ocel.o2o["ocel:oid_1"].isin(object_ids_to_visit))
-                    ^ (ocel.o2o["ocel:oid_2"].isin(object_ids_to_visit))
+                    (ocel.o2o.df["ocel:oid_1"].isin(object_ids_to_visit))
+                    ^ (ocel.o2o.df["ocel:oid_2"].isin(object_ids_to_visit))
                 )
-                & ~(ocel.o2o["ocel:oid_1"].isin(graph.object_ids))
-                & ~(ocel.o2o["ocel:oid_2"].isin(graph.object_ids))
+                & ~(ocel.o2o.df["ocel:oid_1"].isin(graph.object_ids))
+                & ~(ocel.o2o.df["ocel:oid_2"].isin(graph.object_ids))
             ],
         )
 
