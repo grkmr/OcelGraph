@@ -3,8 +3,8 @@ from typing import cast
 import pandas as pd
 from ocelescope import OCEL
 
-from .inputs.ocelGraph import EventRoot, OCELGraphInput
-from .resources.ocelGraph import E2ORelation, EventNode, O2ORelation, ObjectNode, OCELGraph
+from .input import EventRoot, OCELGraphInput
+from .resource import EventNode, ObjectNode, OCELGraph, Relation
 
 
 def group_relation_entity(
@@ -38,7 +38,7 @@ def mine_ocel_graph(ocel: OCEL, input: OCELGraphInput):
     if isinstance(input.root, EventRoot):
         root_id = input.root.event_id
         root = ocel.events.df[ocel.events.df[ocel.ocel.event_id_column] == input.root.event_id].iloc[0]
-        events_to_visit.append(EventNode(id=input.root.event_id, activity_type=root[ocel.ocel.event_activity]))
+        events_to_visit.append(EventNode(id=input.root.event_id, activity=root[ocel.ocel.event_activity]))
     else:
         root_id = input.root.object_id
         root = ocel.objects.df[ocel.objects.df[ocel.ocel.object_id_column] == input.root.object_id].iloc[0]
@@ -140,8 +140,8 @@ def mine_ocel_graph(ocel: OCEL, input: OCELGraphInput):
             .drop_duplicates(subset=["target_id"], keep="first")
             .iterrows()
         ):
-            graph.o2o_relations.append(
-                O2ORelation(source=str(row["id"]), target=str(row["target_id"]), qualifier=str(row["qualifier"]))
+            graph.relations.append(
+                Relation(source=str(row["id"]), target=str(row["target_id"]), qualifier=str(row["qualifier"]))
             )
             objects_to_visit.append(ObjectNode(id=str(row["target_id"]), object_type=str(row["target_type"])))
 
@@ -150,15 +150,15 @@ def mine_ocel_graph(ocel: OCEL, input: OCELGraphInput):
             .drop_duplicates(subset=["ocel:eid"], keep="first")
             .iterrows()
         ):
-            graph.e2o_relations.append(
-                E2ORelation(
-                    event_id=str(row["ocel:eid"]),
-                    object_id=str(row["ocel:oid"]),
+            graph.relations.append(
+                Relation(
+                    source=str(row["ocel:eid"]),
+                    target=str(row["ocel:oid"]),
                     qualifier=str(row["ocel:qualifier"]),
                     object_type=str(row["ocel:type"]),
                 )
             )
-            events_to_visit.append(EventNode(id=str(row["ocel:eid"]), activity_type=str(row["ocel:activity"])))
+            events_to_visit.append(EventNode(id=str(row["ocel:eid"]), activity=str(row["ocel:activity"])))
 
         for _, row in (
             cast(
@@ -171,10 +171,10 @@ def mine_ocel_graph(ocel: OCEL, input: OCELGraphInput):
             .drop_duplicates(subset=["ocel:oid"], keep="first")
             .iterrows()
         ):
-            graph.e2o_relations.append(
-                E2ORelation(
-                    event_id=str(row["ocel:eid"]),
-                    object_id=str(row["ocel:oid"]),
+            graph.relations.append(
+                Relation(
+                    source=str(row["ocel:eid"]),
+                    target=str(row["ocel:oid"]),
                     qualifier=str(row["ocel:qualifier"]),
                     object_type=str(row["ocel:type"]),
                 )
