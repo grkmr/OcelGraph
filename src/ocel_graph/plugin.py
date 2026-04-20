@@ -11,14 +11,11 @@ from .input import OCELGraphInput
 from .resource import OCELGraph
 from .util import mine_ocel_graph
 
-# region Resource Defintion
-# endregion
-
 
 class OcelGraphDiscovery(Plugin):
     label = "Ocel Graph"
     description = "Discovers a Object-Centric event log graph"
-    version = "0.1.0"
+    version = "1.0.3"
 
     @plugin_method(label="Mine OCEL Graph", description="Mines a OCEL Graph")
     def mine_ocel_graph(
