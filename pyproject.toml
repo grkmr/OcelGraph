@@ -12,7 +12,7 @@ maintainers = [
 license = { text = "MIT" }
 requires-python = ">=3.13"
 dependencies = [
-    "ocelescope",
+    "ocelescope[plugin]",
 ]
 
 [dependency-groups]
