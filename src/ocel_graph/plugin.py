@@ -15,7 +15,7 @@ from .util import mine_ocel_graph
 class OcelGraphDiscovery(Plugin):
     label = "Ocel Graph"
     description = "Discovers a Object-Centric event log graph"
-    version = "1.0.3"
+    version = "1.0.5"
 
     @plugin_method(label="Mine OCEL Graph", description="Mines a OCEL Graph")
     def mine_ocel_graph(

@@ -1,4 +1,11 @@
-from ocelescope import Graph, GraphEdge, GraphNode, LayoutConfig, Resource, generate_color_map
+from ocelescope import (
+    RADIAL_GRAPH_LAYOUT,
+    Graph,
+    GraphEdge,
+    GraphNode,
+    Resource,
+    generate_color_map,
+)
 from pydantic import BaseModel
 
 
@@ -80,13 +87,5 @@ class OCELGraph(Resource):
             type="graph",
             nodes=object_nodes + event_nodes,
             edges=edges,
-            layout_config=LayoutConfig(
-                elk_options={
-                    "elk.algorithm": "layered",
-                    "elk.direction": "RIGHT",
-                    "elk.edgeRouting": "SPLINES",
-                    "elk.spacing.nodeNode": "60",
-                    "elk.layered.spacing.nodeNodeBetweenLayers": "120",
-                }
-            ),
+            layout_config=RADIAL_GRAPH_LAYOUT,
         )
